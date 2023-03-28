@@ -12,14 +12,14 @@ THEN I am able to successfully create and delete reactions to thoughts and add a
 
 steps for completion:
 
-- create server and connection file
-- move on to models
+- create server and connection file: finished
+- move on to models: finished
 --- create models for Users, Thoughts, and index to export both models
-- create controller for Users and Thoughts
+- create controller for Users and Thoughts: finished
 --- Get routes: Find all Users, Find User by ID, Get all Thoughts
 --- Post routes: Add friend, Create user, Create second user, Create third user, Create reaction, Create thought
 --- Put routes: Update user
---- Delete routes: Remove friend, Delete user, remove reaction
-- create routes
+--- Delete routes: Remove friend, Delete user, remove user
+- create routes: finished
 --- create api routes for Users and Thoughts along with api index to connect to index routes root
 -create utils file for data to be put into seeds file
