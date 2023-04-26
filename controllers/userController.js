@@ -4,6 +4,7 @@ const userTotal = async () =>
     User.aggregate()
         .count('userCount')
         .then((numberOfUsers) => numberOfUsers);
+        // User.countDocuments({}).then((numberOfUsers) => numberOfUsers);
 
 const userThoughts = async (thoughtId) =>
     Thoughts.aggregate([
@@ -18,7 +19,7 @@ const userThoughts = async (thoughtId) =>
         {
             $group: {
                 _id: ObjectId(thoughtId),
-                friendsCount: { $max: 'user.thought'} 
+                friendsCount: { $max: '$user.thought' } 
             },
         },
     ]);
@@ -36,7 +37,7 @@ const friends = async (userId) =>
         {
             $group: {
                 _id: ObjectId(userId),
-                friendsCount: { $max: 'user.friends'} 
+                friendsCount: { $max: '$user.friends' } 
             },
         },
     ]);
@@ -73,12 +74,12 @@ module.exports = {
             return res.status(500).json(err);
         });
     },
-    createUser(res, req) {
+    createUser(req, res) {
         User.create(req.body)
             .then((users) => res.json(users))
             .catch((err) => res.status(500).json(err));
     },
-    updateUser(res, req) {
+    updateUser(req, res) {
         User.findOneAndUpdate(
             { _id: req.params.userId },
             { $set: req.body },
@@ -91,8 +92,8 @@ module.exports = {
         )
         .catch((err) => res.status(500).json(err));
     },
-    deleteUser(res, req) {
-        User.findOneAndRemove({ _id: req.param.userId })
+    deleteUser(req, res) {
+        User.findOneAndRemove({ _id: req.params.userId })
             .then((user) =>
                 !user
                     ? res.status(404).json({ message: 'not able to find that user' })
@@ -101,33 +102,31 @@ module.exports = {
             .then(() => res.json({ message: 'This user and all posted thoughts have been deleted' }))
             .catch((err) => res.status(500).json(err));
     },
-    addFriend(res, req) {
-        console.log('You have added a new friend');
-        console.log(req.body);
+    addFriend(req, res) {
         User.findOneAndUpdate(
             { _id: req.params.userId },
-            { $addToSet: { friends: req.body }},
-            { runValidators: true, new: true }
+            { $addToSet: { friends: req.params.friendId } },
+            { new: true }
         )
-            .then((user) => 
+            .then((user) =>
                 !user
-                    ? res.status(404).json({ message: 'Could not find this user' })
+                    ? res.status(404).json({ message: 'Could not find user by Id' })
                     : res.json(user)
             )
             .catch((err) => res.status(500).json(err));
     },
-    deleteFriend(res, req) {
+    removeFriend(req, res) {
         User.findOneAndUpdate(
             { _id: req.params.userId },
-            { $pull: { friends: { friendsId: req.params.friendsId }}},
-            { runValidators: true, new: true }
+            { $pull: { friends: req.params.friendId } },
+            { new: true }
         )
-        .then((user) =>
-            !user
-                ? res.status(404).json({ message: 'Could not find this user' })
-                : res.json(user)
-        )
-        .catch((err) => res.status(500).json(err));
+            .then((user) =>
+                !user
+                    ? res.status(404).json({ message: 'Could not find user by Id' })
+                    : res.json(user)
+            )
+            .catch((err) => res.status(500).json(err));
     },
 };
 

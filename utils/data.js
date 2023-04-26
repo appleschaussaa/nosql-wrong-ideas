@@ -1,15 +1,37 @@
-const connection = require('../config/connection');
-const { Thoughts, Users } = require('../models');
-const { randomUser, randomThought } = require('./data');
+const usernameStored = [
+    'hiker50mi',
+    'narddog',
+    'bigtuna'
+];
 
-connection.on('error', (err) => err);
+const emailStored = [
+    'yeahright@email.com',
+    'spamaccount@yahoo.com',
+    'professionalprimary@gmail.com'
+];
 
-connection.once('open', async () => {
-    console.log('now connected');
-    await Thoughts.deleteMany({});
-    await Users.deleteMany({});
-    const users = [];
-    for (let i = 0; i < 20; i++) {
-        const thoughts = randomThought(3);
-    }
-})
+const thoughtsPost = [
+    'how do people think the world is flat?',
+    'there are more planes in the ocean than submarines in the sky...',
+    'today is a good day'
+];
+
+const randomArray = (arr) => arr[Math.floor(Math.random() * arr.length)];
+
+const randomUser = () => {
+  const username = randomArray(usernameStored);
+  const email = randomArray(emailStored);
+  return { username, email };
+};
+
+const randomThought = (int) => {
+  const results = [];
+  for (let i = 0; i < int; i++) {
+      const thoughtText = randomArray(thoughtsPost);
+      results.push({ thoughtText });
+  }
+  return results;
+};
+
+  module.exports = { randomUser, randomThought };
+
