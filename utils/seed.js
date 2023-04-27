@@ -3,7 +3,6 @@ const { randomUser, randomThought } = require('./data');
 const connection = require('../config/connection');
 
 // Seed the User collection
-// Seed the User collection
 const seedUsers = async () => {
   try {
     // Clear existing data

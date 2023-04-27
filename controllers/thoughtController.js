@@ -3,38 +3,30 @@ const { User, Thoughts } = require('../models');
 module.exports = {
     getThoughts(req, res) {
         Thoughts.find()
-            .then((thought) => res.join(thought))
+            .then((thought) => res.json(thought))
             .catch((err) => res.status(500).json(err));
     },
-    getSingleThought(req, res) {
-        Thoughts.findOne({ _id: req.params.thoughtsId })
-            .select('-_v')
-            .then((thought) =>
-                !thought
-                    ? res.status(404).json({ message: 'Could not find thought using that Id' })
-                    : res.json(thought)
-            )
-            .catch((err) => res.status(500).json(err));
-    },
-    createThought(req, res) {
-        Thoughts.create(req.body)
-            .then((thought) => {
-                return User.findOneAndUpdate(
-                    { _id: req.body.userId },
-                    { $addToSet: { thoughts: thought._id}},
-                    { new: true }
-                );
-            })
-            .then((user) =>
-                !user
-                    ? res.status(404).json({ message: 'Created thought but could not find user by that Id' })
-                    : res.json('Thought was created')
-            )
-            .catch((err) => {
-                console.log(err);
-                res.status(500).json(err);
-            });
-    },
+    getSingleThought: async (req, res) => {
+        try {
+          const thought = await Thoughts.findById(req.params.thoughtId);
+          if (!thought) {
+            res.status(404).json({ message: 'No thought found with this id!' });
+            return;
+          }
+          res.json(thought);
+        } catch (err) {
+          res.status(500).json(err);
+        }
+      },
+
+    createThought: async (req, res) => {
+        try {
+          const newThought = await Thoughts.create(req.body);
+          res.json(newThought);
+        } catch (err) {
+          res.status(500).json(err);
+        }
+      }, 
     updateThought(req, res) {
         Thoughts.findOneAndUpdate(
             { _id: req.params.thoughtId },
